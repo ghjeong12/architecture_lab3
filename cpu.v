@@ -1,7 +1,7 @@
 `include "opcodes.v" 
-`include "registerfile.v"	
-`include "control.v"   
-`include "datapath.v"
+`include "register_file.v"	
+`include "control_unit.v"   
+`include "data_path.v"
 
 module cpu (readM, writeM, address, data, ackOutput, inputReady, reset_n, clk);
 	output reg readM;									// read from memory
@@ -22,7 +22,7 @@ module cpu (readM, writeM, address, data, ackOutput, inputReady, reset_n, clk);
 	wire [11:0] signal;                    //control signal
 
 
-	control CON (instruction, signal);
+	control_unit CON (instruction, signal);
 
 	//inputs for datapath
 	wire DI_readM = readM;
@@ -31,13 +31,9 @@ module cpu (readM, writeM, address, data, ackOutput, inputReady, reset_n, clk);
 	reg [`WORD_SIZE-1:0] inputData;
 	wire [`WORD_SIZE-1:0] outputData;
 
-
 	reg first;
 
-
-	//wire [`WORD_SIZE-1:0] DI_outputData = outputData;
-
-	datapath DP (
+	data_path DP (
 		DI_readM, 
 		DI_writeM, 
 		DI_address, 
@@ -59,15 +55,9 @@ module cpu (readM, writeM, address, data, ackOutput, inputReady, reset_n, clk);
 	initial
 	begin
 		PC = 0;
-		//nextPC <= 0;
 		address = 0;
 		readM = 1;
 		first = 1;
-	end
-
-	always @ (negedge clk)
-	begin
-		//address = DI_address;
 	end
 
 	always @(*) begin
@@ -76,27 +66,18 @@ module cpu (readM, writeM, address, data, ackOutput, inputReady, reset_n, clk);
 		else address = DI_address;
 	end
 
-
-	//assign address = clk ? PC : DI_address;
-
 	always @ (posedge clk)
 	begin
-		$display("instruction %h", instruction);
 		if(!reset_n)
 		begin
-			first = 1;
-			PC = -1;
-			//address = 0;
-			readM = 1;
-			//instruction = `WORD_SIZE'h9000;
-			//wait(inputReady == 1) instruction = data;			
+			first <= 1;
+			PC <= -1;
+			readM <= 1;	
 		end
 		else
 		begin
-			//$display("outputdata : %h", outputData);
 			PC <= nextPC;
-			//address <= PC;
-			readM = 1;
+			readM <= 1;
 		end
 	end
 
@@ -108,7 +89,7 @@ module cpu (readM, writeM, address, data, ackOutput, inputReady, reset_n, clk);
 			first = 0;
 		end
 		else begin
-			if(clk > 0) instruction = data;
+			if(clk > 0) instruction <= data;
 			readM <= 0;
 		end	
 	end

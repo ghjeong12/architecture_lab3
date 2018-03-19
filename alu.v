@@ -44,7 +44,7 @@ module ALU(A,B,OP,C,Cout, bcond);
 		else if (OP == 4'b1001) begin C <= ~A; end
 		else if (OP == 4'b1010) begin C <= {A[15], A[15:1]}; end
 		else if (OP == 4'b1011) begin C <= A >>> 1; end
-		else if (OP == 4'b1100) begin C <= ~A + 1; end
+		else if (OP == 4'b1100) begin C <= ~(A) + 1; end
 		else if (OP == 4'b1101) begin C <= A << 1; end
 		else if (OP == 4'b1110) begin C <= A <<< 1; end
 		else if (OP == 4'b1111) begin C <= {B[7:0], 8'h00}; end
