@@ -43,8 +43,6 @@ module register_file (r1, r2, rd, writeData, regWrite, readData1, readData2, clk
 	always @(posedge clk)
 	begin
 		if(regWrite) registers[rd] = writeData;
-		$display("%h %h %h %h", registers[0], registers[1], registers[2], registers[3]);
-		$display("rd, writeData %h %h", rd, writeData);
 	end
 
 	

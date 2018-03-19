@@ -68,7 +68,6 @@ module cpu (readM, writeM, address, data, ackOutput, inputReady, reset_n, clk);
 
 	always @ (posedge clk)
 	begin
-		$display("instruction %h", instruction);
 		if(!reset_n)
 		begin
 			first <= 1;
