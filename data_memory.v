@@ -23,7 +23,7 @@ module data_memory (
 	input wire [`WORD_SIZE-1:0] writeData;
 	input wire [`WORD_SIZE-1:0] inputData;      //data from tb
 	output wire [`WORD_SIZE-1:0] outputData;    //data to tb
-	output reg [`WORD_SIZE-1:0] readData;		
+	output wire [`WORD_SIZE-1:0] readData;		
 	input ackOutput;							// acknowledge of data receipt from output port
 	input inputReady;							// indicates that data is ready from the input port
 	input MemWrite;
@@ -32,13 +32,14 @@ module data_memory (
 
 	assign outputData = (MemWrite) ? writeData : `WORD_SIZE'bz;
 	assign address = calc_address;
-	
+	assign readData = inputData;
+
 	always @ (negedge clk)
 	begin
 		if(MemRead)
 		begin
 			readM = 1;
-			if(inputReady) readData = inputData;
+			//if(inputReady) readData = inputData;
 		end
 		else if(MemWrite)
 		begin
@@ -47,10 +48,17 @@ module data_memory (
 		end
 	end
 
+	/*
+	always @(posedge inputReady)
+	begin
+		//readData <= inputData;
+	end
+	*/
+
 	always @(posedge ackOutput)
 	begin
 		writeM <= 0;
 	end
 	
 
-endmodule							  																		  
+endmodule							 

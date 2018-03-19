@@ -17,7 +17,7 @@ module data_path (
 	nextPC,
 	reset_n
 );
-	output reg readM;									// read from memory
+	output readM;									// read from memory
 	output writeM;									// wrtie to memory
 	output wire [`WORD_SIZE-1:0] address;	// current address for data
 	input wire [`WORD_SIZE-1:0] inputData;			// data being input from memory
@@ -55,17 +55,18 @@ module data_path (
 
 	//sign-extended instruction[7:0]
 	wire [`WORD_SIZE-1:0] extended = { {8{instruction[7]}}, instruction[7:0] };
+	wire [`WORD_SIZE-1:0] zero_extended = {8'h00, instruction[7:0]};
 
 	//inputs and outputs for regALU
 	wire [`WORD_SIZE-1:0] A = readData1;
-	wire [`WORD_SIZE-1:0] B = ALUSrc ? extended : readData2;
+	wire [`WORD_SIZE-1:0] B = ALUSrc ? (instruction[15:12] == `ORI_OP ? zero_extended : extended) : readData2;
 	wire [3:0] OP = ALUOp;
 	//wire [`WORD_SIZE-1:0] C;
 	wire Cout;
 
 
 	//inputs and outputs for datamemory
-	wire DM_readM = readM;
+	wire DM_readM; assign readM = DM_readM;
 	wire DM_writeM; assign writeM = DM_writeM;
 	wire [`WORD_SIZE-1:0] calc_address;
 	wire [`WORD_SIZE-1:0] DM_address; assign address = DM_address;
@@ -78,7 +79,7 @@ module data_path (
 	//jump logic
 	wire [`WORD_SIZE-1:0] jumpTarget = {PC[15:12], instruction[11:0]}; 
 
-	assign writeData = calc_address;          //fix this
+	assign writeData = MemtoReg ? DM_readData : calc_address;          //fix this
 
 	register_file regFile (r1, r2, rd, writeData, RegWrite, readData1, readData2, clk, reset_n);
 	ALU regALU(A, B, OP, calc_address, Cout, bcond);
@@ -103,4 +104,4 @@ module data_path (
 	assign nextPC = Jump ? jumpTarget : ((bcond && Branch) ? PC + 1 + extended : PC + 1);
 	//assign nextPC = (bcond && Branch) ? (PC + 1 + extended) : ( Jump ? jumpTarget : (PC + 1));
 	
-endmodule							  																		  
+endmodule					

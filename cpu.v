@@ -25,7 +25,7 @@ module cpu (readM, writeM, address, data, ackOutput, inputReady, reset_n, clk);
 	control_unit CON (instruction, signal);
 
 	//inputs for datapath
-	wire DI_readM = readM;
+	wire DI_readM;
 	wire DI_writeM; assign writeM = DI_writeM;
 	wire [`WORD_SIZE-1:0] DI_address;
 	reg [`WORD_SIZE-1:0] inputData;
@@ -68,6 +68,7 @@ module cpu (readM, writeM, address, data, ackOutput, inputReady, reset_n, clk);
 
 	always @ (posedge clk)
 	begin
+		$display("instruction %h", instruction);
 		if(!reset_n)
 		begin
 			first <= 1;
@@ -81,6 +82,11 @@ module cpu (readM, writeM, address, data, ackOutput, inputReady, reset_n, clk);
 		end
 	end
 
+	always @ (DI_readM)
+	begin
+		if(clk == 0) readM <= 1;
+	end
+
 	always @ (posedge inputReady)
 	begin
 		if(first)
@@ -90,8 +96,9 @@ module cpu (readM, writeM, address, data, ackOutput, inputReady, reset_n, clk);
 		end
 		else begin
 			if(clk > 0) instruction <= data;
+			else if(clk == 0) inputData <= data;
 			readM <= 0;
 		end	
 	end
 	
-endmodule				  
+endmodule				

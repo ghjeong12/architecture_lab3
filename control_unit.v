@@ -13,11 +13,11 @@ module control_unit (instruction, signal);
 
 	always @ (*)
 	begin
-		if(instruction[15:12] == 4'b1111)       // R-type
+		if(instruction[15:12] == `ALU_OP)       // R-type
 		begin
 			case(instruction[5:0])
 				`FUNC_ADD: signal = 12'h810;   // ADD
-				`FUNC_SUB: signal = 12'h811;
+				`FUNC_SUB: signal = 12'h811;	//
 				`FUNC_SHR: signal = 12'h81a;
 				`FUNC_SHL: signal = 12'h81d;
 				`FUNC_ORR: signal = 12'h816;
@@ -31,11 +31,13 @@ module control_unit (instruction, signal);
 			case(instruction[15:12])
 				`ADI_OP: signal = 12'h030;
 				`SWD_OP: signal = 12'h060;
+				`LWD_OP: signal = 12'h960;
 				`BNE_OP: signal = 12'h201;
 				`JMP_OP: signal = 12'h400;
 				`LHI_OP: signal = 12'h03f;
+				`ORI_OP: signal = 12'h035;
 			endcase
 		end
 	end
 	
-endmodule							  																		  
+endmodule					
