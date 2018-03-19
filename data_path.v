@@ -62,7 +62,6 @@ module data_path (
 	wire [`WORD_SIZE-1:0] B = ALUSrc ? (instruction[15:12] == `ORI_OP ? zero_extended : extended) : readData2;
 	wire [3:0] OP = ALUOp;
 	//wire [`WORD_SIZE-1:0] C;
-	wire Cout;
 
 
 	//inputs and outputs for datamemory
@@ -82,7 +81,7 @@ module data_path (
 	assign writeData = MemtoReg ? DM_readData : calc_address;          //fix this
 
 	register_file regFile (r1, r2, rd, writeData, RegWrite, readData1, readData2, clk, reset_n);
-	ALU regALU(A, B, OP, calc_address, Cout, bcond);
+	ALU regALU(A, B, OP, calc_address, bcond);
 	
 
 	data_memory datMem (
