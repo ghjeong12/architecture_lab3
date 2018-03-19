@@ -73,7 +73,9 @@ module data_path (
 
 
 	//branch logic
+	wire equal;   //if r1 == r2 then 0 if r1 != r2 then 1
 	wire bcond;
+	assign bcond = (instruction[15:12] == `BNE_OP) ? equal : !equal; 
 
 	//jump logic
 	wire [`WORD_SIZE-1:0] jumpTarget = {PC[15:12], instruction[11:0]}; 
@@ -81,7 +83,7 @@ module data_path (
 	assign writeData = MemtoReg ? DM_readData : calc_address;          //fix this
 
 	register_file regFile (r1, r2, rd, writeData, RegWrite, readData1, readData2, clk, reset_n);
-	ALU regALU(A, B, OP, calc_address, bcond);
+	ALU regALU(A, B, OP, calc_address, equal);
 	
 
 	data_memory datMem (
@@ -101,6 +103,5 @@ module data_path (
 	);
 
 	assign nextPC = Jump ? jumpTarget : ((bcond && Branch) ? PC + 1 + extended : PC + 1);
-	//assign nextPC = (bcond && Branch) ? (PC + 1 + extended) : ( Jump ? jumpTarget : (PC + 1));
 	
 endmodule					
